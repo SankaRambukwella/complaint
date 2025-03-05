@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DDG Logistics Complaint Form</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -148,6 +149,7 @@
             <button type="button" id="camera-btn" class="btn">Take Photo (Optional)</button>
             <button type="submit" class="btn" id="submit-btn">Submit Complaint</button>
         </form>
+        <div class="qr-container" id="qr-container"></div>
     </div>
 
 
@@ -287,6 +289,43 @@
             document.getElementById("label-contact").textContent = translations[currentLang].contact;
             document.getElementById("submit-btn").textContent = translations[currentLang].submit;
             document.getElementById("camera-btn").textContent = translations[currentLang].takePhoto;
+        });
+
+        document.getElementById('complaintForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                branch: document.getElementById('branch').value,
+                location: document.getElementById('location').value,
+                issue: document.getElementById('issue').value,
+                contact: document.getElementById('contact').value
+            };
+            
+            const qrData = `Name: ${formData.name}\nBranch: ${formData.branch}\nLocation: ${formData.location}\nIssue: ${formData.issue}\nContact: ${formData.contact}`;
+            
+            document.getElementById('qr-container').innerHTML = '';
+            const qrCodeElement = document.createElement('div');
+            document.getElementById('qr-container').appendChild(qrCodeElement);
+            const qrCode = new QRCode(qrCodeElement, {
+                text: qrData,
+                width: 200,
+                height: 200
+            });
+            
+            setTimeout(() => {
+                const qrCanvas = qrCodeElement.getElementsByTagName('canvas')[0];
+                const qrImage = qrCanvas.toDataURL("image/png");
+                const downloadLink = document.createElement("a");
+                downloadLink.href = qrImage;
+                downloadLink.download = `complaint_qr_${Date.now()}.png`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }, 500);
+            
+            alert('Complaint submitted successfully! QR code generated and downloaded.');
+            document.getElementById('complaintForm').reset();
         });
     </script>
 </body>
