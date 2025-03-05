@@ -293,41 +293,51 @@
         });
 
         document.getElementById('complaintForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = {
-                name: document.getElementById('name').value,
-                branch: document.getElementById('branch').value,
-                location: document.getElementById('location').value,
-                issue: document.getElementById('issue').value,
-                contact: document.getElementById('contact').value
-            };
-            
-            const qrData = `Name: ${formData.name}\nBranch: ${formData.branch}\nLocation: ${formData.location}\nIssue: ${formData.issue}\nContact: ${formData.contact}`;
-            
-            document.getElementById('qr-code').innerHTML = '';
-            const qrCode = new QRCode(document.getElementById('qr-code'), {
-                text: qrData,
-                width: 200,
-                height: 200
-            });
-            
-            setTimeout(() => {
-                const qrCanvas = document.querySelector('#qr-code canvas');
-                if (qrCanvas) {
-                    const qrImage = qrCanvas.toDataURL("image/png");
-                    const downloadLink = document.createElement("a");
-                    downloadLink.href = qrImage;
-                    downloadLink.download = `complaint_qr_${Date.now()}.png`;
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                }
-            }, 500);
-            
-            alert('Complaint submitted successfully! QR code generated and downloaded.');
-            document.getElementById('complaintForm').reset();
-        });
+    e.preventDefault();
+    
+    const formData = {
+        name: document.getElementById('name').value,
+        branch: document.getElementById('branch').value,
+        location: document.getElementById('location').value,
+        issue: document.getElementById('issue').value,
+        contact: document.getElementById('contact').value
+    };
+    
+    const qrData = `Name: ${formData.name}\nBranch: ${formData.branch}\nLocation: ${formData.location}\nIssue: ${formData.issue}\nContact: ${formData.contact}`;
+    
+    document.getElementById('qr-code').innerHTML = '';
+    const qrCode = new QRCode(document.getElementById('qr-code'), {
+        text: qrData,
+        width: 200,
+        height: 200
+    });
+    
+    // Add a download button for the QR code
+    const downloadBtn = document.createElement('button');
+    downloadBtn.textContent = 'Download QR Code';
+    downloadBtn.classList.add('btn');
+    downloadBtn.style.marginTop = '10px';
+    
+    // Add event listener for downloading the QR code
+    downloadBtn.addEventListener('click', () => {
+        const qrCanvas = document.querySelector('#qr-code canvas');
+        if (qrCanvas) {
+            const qrImage = qrCanvas.toDataURL("image/png");
+            const downloadLink = document.createElement("a");
+            downloadLink.href = qrImage;
+            downloadLink.download = `complaint_qr_${Date.now()}.png`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+    });
+    
+    // Append the download button below the QR code
+    document.getElementById('qr-code').appendChild(downloadBtn);
+    
+    alert('Complaint submitted successfully! QR code generated.');
+    document.getElementById('complaintForm').reset();
+});
     </script>
 </body>
 </html>
