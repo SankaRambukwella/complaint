@@ -313,13 +313,16 @@
             });
             
             setTimeout(() => {
-                const qrImage = document.querySelector('#qr-code img').src;
-                const downloadLink = document.createElement("a");
-                downloadLink.href = qrImage;
-                downloadLink.download = `complaint_qr_${Date.now()}.png`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                const qrCanvas = document.querySelector('#qr-code canvas');
+                if (qrCanvas) {
+                    const qrImage = qrCanvas.toDataURL("image/png");
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = qrImage;
+                    downloadLink.download = `complaint_qr_${Date.now()}.png`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                }
             }, 500);
             
             alert('Complaint submitted successfully! QR code generated and downloaded.');
