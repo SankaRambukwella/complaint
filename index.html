@@ -94,30 +94,49 @@
         #camera-btn:hover {
             background-color: #27ae60;
         }
+        .lang-btn {
+            display: block;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            color: white;
+            background-color: #e67e22;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+        }
+        .lang-btn:hover {
+            background-color: #d35400;
+        }
     </style>
 </head>
 <body>
+
     <div class="complaint-container">
-        <h2 class="form-title">DDG Logistics Complaint Form</h2>
+        <button id="language-btn" class="lang-btn">English / සිංහල</button>
+        <h2 class="form-title" id="form-title">DDG Logistics Complaint Form</h2>
+        
         <form id="complaintForm">
             <div class="form-group">
-                <label for="name">Complainer Name *</label>
+                <label for="name" id="label-name">Complainer Name *</label>
                 <input type="text" id="name" required placeholder="Enter your full name">
             </div>
             <div class="form-group">
-                <label for="branch">Branch Name *</label>
+                <label for="branch" id="label-branch">Branch Name *</label>
                 <input type="text" id="branch" required placeholder="Enter branch name">
             </div>
             <div class="form-group">
-                <label for="location">Location *</label>
+                <label for="location" id="label-location">Location *</label>
                 <input type="text" id="location" required placeholder="Enter complaint location">
             </div>
             <div class="form-group">
-                <label for="issue">Issue Description *</label>
+                <label for="issue" id="label-issue">Issue Description *</label>
                 <textarea id="issue" rows="4" required placeholder="Describe your complaint in detail"></textarea>
             </div>
             <div class="form-group">
-                <label for="contact">Contact Number(Mobile Number) *</label>
+                <label for="contact" id="label-contact">Contact Number (Mobile Number) *</label>
                 <input type="tel" id="contact" required placeholder="Enter contact number" pattern="[0-9]{10}" inputmode="numeric">
             </div>
             
@@ -127,9 +146,10 @@
             </div>
             
             <button type="button" id="camera-btn" class="btn">Take Photo (Optional)</button>
-            <button type="submit" class="btn">Submit Complaint</button>
+            <button type="submit" class="btn" id="submit-btn">Submit Complaint</button>
         </form>
     </div>
+
 
     <script>
         let capturedImage = null;
@@ -229,6 +249,44 @@
                 console.error('Submission error:', error);
                 alert('Failed to submit complaint. Please try again.');
             }
+        });
+
+        const translations = {
+            en: {
+                title: "DDG Logistics Complaint Form",
+                name: "Complainer Name *",
+                branch: "Branch Name *",
+                location: "Location *",
+                issue: "Issue Description *",
+                contact: "Contact Number (Mobile Number) *",
+                submit: "Submit Complaint",
+                takePhoto: "Take Photo (Optional)"
+            },
+            si: {
+                title: "DDG ලොජිස්ටික්ස් පැමිණිලි පෝරමය",
+                name: "පැමිණිලිකරුගේ නම *",
+                branch: "ශාඛා නාමය *",
+                location: "ස්ථානය *",
+                issue: "ගැටළුව විස්තර කරන්න *",
+                contact: "දුරකථන අංකය (ජංගම) *",
+                submit: "පැමිණිලි යවන්න",
+                takePhoto: "ඡායාරූපය ගන්න (අනිවාර්යය නොවේ)"
+            }
+        };
+
+        let currentLang = "en"; // Default Language
+
+        document.getElementById("language-btn").addEventListener("click", () => {
+            currentLang = currentLang === "en" ? "si" : "en";
+
+            document.getElementById("form-title").textContent = translations[currentLang].title;
+            document.getElementById("label-name").textContent = translations[currentLang].name;
+            document.getElementById("label-branch").textContent = translations[currentLang].branch;
+            document.getElementById("label-location").textContent = translations[currentLang].location;
+            document.getElementById("label-issue").textContent = translations[currentLang].issue;
+            document.getElementById("label-contact").textContent = translations[currentLang].contact;
+            document.getElementById("submit-btn").textContent = translations[currentLang].submit;
+            document.getElementById("camera-btn").textContent = translations[currentLang].takePhoto;
         });
     </script>
 </body>
