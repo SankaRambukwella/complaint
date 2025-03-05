@@ -149,9 +149,10 @@
             <button type="button" id="camera-btn" class="btn">Take Photo (Optional)</button>
             <button type="submit" class="btn" id="submit-btn">Submit Complaint</button>
         </form>
-        <div class="qr-container" id="qr-container"></div>
+        <div class="qr-container">
+            <div id="qr-code"></div>
+        </div>
     </div>
-
 
     <script>
         let capturedImage = null;
@@ -304,18 +305,15 @@
             
             const qrData = `Name: ${formData.name}\nBranch: ${formData.branch}\nLocation: ${formData.location}\nIssue: ${formData.issue}\nContact: ${formData.contact}`;
             
-            document.getElementById('qr-container').innerHTML = '';
-            const qrCodeElement = document.createElement('div');
-            document.getElementById('qr-container').appendChild(qrCodeElement);
-            const qrCode = new QRCode(qrCodeElement, {
+            document.getElementById('qr-code').innerHTML = '';
+            const qrCode = new QRCode(document.getElementById('qr-code'), {
                 text: qrData,
                 width: 200,
                 height: 200
             });
             
             setTimeout(() => {
-                const qrCanvas = qrCodeElement.getElementsByTagName('canvas')[0];
-                const qrImage = qrCanvas.toDataURL("image/png");
+                const qrImage = document.querySelector('#qr-code img').src;
                 const downloadLink = document.createElement("a");
                 downloadLink.href = qrImage;
                 downloadLink.download = `complaint_qr_${Date.now()}.png`;
