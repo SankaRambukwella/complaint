@@ -307,7 +307,7 @@
             
             document.getElementById('qr-code').innerHTML = '';
             const qrCode = new QRCode(document.getElementById('qr-code'), {
-                text: qrData,
+                text: encodeURIComponent(qrData), // Fix for Sinhala text
                 width: 200,
                 height: 200
             });
