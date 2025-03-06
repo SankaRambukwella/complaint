@@ -142,9 +142,10 @@
             </div>
             
             <div class="camera-container">
-                <video id="camera" width="100%" height="auto"></video>
-                <img id="camera-preview" alt="Complaint Image">
-            </div>
+    <video id="camera" width="100%" height="auto"></video>
+    <img id="camera-preview" alt="Complaint Image">
+    <button type="button" id="delete-photo-btn" class="btn" style="background-color: #e74c3c; display: none;">Delete Photo</button>
+</div>
             
             <button type="button" id="camera-btn" class="btn">Take Photo (Optional)</button>
             <button type="submit" class="btn" id="submit-btn">Submit Complaint</button>
@@ -155,47 +156,51 @@
     </div>
 
     <script>
-        let capturedImage = null;
-        const video = document.getElementById('camera');
-        const cameraBtn = document.getElementById('camera-btn');
-        const cameraPreview = document.getElementById('camera-preview');
-        const form = document.getElementById('complaintForm');
+      const cameraBtn = document.getElementById('camera-btn');
+const deletePhotoBtn = document.getElementById('delete-photo-btn');
+const video = document.getElementById('camera');
+const cameraPreview = document.getElementById('camera-preview');
+let capturedImage = null;
 
-        // Camera Functionality
-        cameraBtn.addEventListener('click', async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: 'environment'  // Prefer back camera on mobile
-                    } 
-                });
-                video.srcObject = stream;
-                video.style.display = 'block';
-                cameraPreview.style.display = 'none';
+// Take Photo Function
+cameraBtn.addEventListener('click', async () => {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        video.srcObject = stream;
+        video.style.display = 'block';
+        cameraPreview.style.display = 'none';
+        deletePhotoBtn.style.display = 'none';
 
-                video.onloadedmetadata = () => {
-                    video.play();
-                    setTimeout(() => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = video.videoWidth;
-                        canvas.height = video.videoHeight;
-                        canvas.getContext('2d').drawImage(video, 0, 0);
-                        
-                        capturedImage = canvas.toDataURL('image/jpeg');
-                        cameraPreview.src = capturedImage;
-                        
-                        video.style.display = 'none';
-                        cameraPreview.style.display = 'block';
+        video.onloadedmetadata = () => {
+            video.play();
+            setTimeout(() => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
 
-                        // Stop video stream
-                        stream.getTracks().forEach(track => track.stop());
-                    }, 3000);  // Capture after 3 seconds
-                };
-            } catch (err) {
-                console.error("Camera error: ", err);
-                alert("Could not access camera. Please check permissions.");
-            }
-        });
+                capturedImage = canvas.toDataURL('image/jpeg');
+                cameraPreview.src = capturedImage;
+
+                video.style.display = 'none';
+                cameraPreview.style.display = 'block';
+                deletePhotoBtn.style.display = 'block';  // Show delete button
+
+                stream.getTracks().forEach(track => track.stop());
+            }, 3000);
+        };
+    } catch (err) {
+        console.error("Camera error:", err);
+        alert("Could not access camera. Please check permissions.");
+    }
+});
+
+// Delete Photo Function
+deletePhotoBtn.addEventListener('click', () => {
+    capturedImage = null;
+    cameraPreview.style.display = 'none';
+    deletePhotoBtn.style.display = 'none';
+});
 
         // Form Submission
         form.addEventListener('submit', async (e) => {
