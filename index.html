@@ -257,7 +257,7 @@
     </div>
 
     <script>
-        let capturedImage = null;
+         let capturedImage = null;
         const video = document.getElementById('camera');
         const cameraBtn = document.getElementById('camera-btn');
         const cameraPreview = document.getElementById('camera-preview');
@@ -323,8 +323,19 @@
             };
 
             try {
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                // Send data to Google Apps Script
+                const response = await fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to submit complaint.');
+                }
+
 
                 // Generate PDF Receipt
                 generatePDF(formData);
