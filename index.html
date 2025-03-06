@@ -270,6 +270,7 @@ const successMessage = document.getElementById('success-message');
 const qrContainer = document.getElementById('qr-container');
 
 // Function to start the camera
+// Modify your startCamera function to provide more detailed error information
 async function startCamera() {
     try {
         // Stop any existing stream
@@ -277,34 +278,49 @@ async function startCamera() {
             stream.getTracks().forEach(track => track.stop());
         }
         
+        console.log("Requesting camera access...");
         stream = await navigator.mediaDevices.getUserMedia({ 
             video: { 
                 facingMode: 'environment'  // Prefer back camera on mobile
             } 
         });
+        console.log("Camera access granted!");
         
         video.srcObject = stream;
-        video.style.display = 'block';
-        cameraPreview.style.display = 'none';
-        deletePhotoBtn.style.display = 'none';
+        
+        // Add event listener to make sure video is loaded and playing
+        video.onloadedmetadata = function(e) {
+            console.log("Video metadata loaded, playing video");
+            video.play();
+            video.style.display = 'block';
+            cameraPreview.style.display = 'none';
+            deletePhotoBtn.style.display = 'none';
+        };
         
         cameraBtn.textContent = 'Capture Photo';
         cameraBtn.removeEventListener('click', startCamera);
         cameraBtn.addEventListener('click', capturePhoto);
         
     } catch (err) {
-        console.error("Camera error: ", err);
-        alert("Could not access camera. Please check permissions.");
+        console.error("Camera error details:", err);
+        alert("Could not access camera: " + err.message);
     }
 }
-
 // Function to capture photo
 function capturePhoto() {
+    if (!video.videoWidth) {
+        console.error("Video not ready yet");
+        alert("Camera not ready. Please try again.");
+        return;
+    }
+    
     const canvas = document.createElement('canvas');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const context = canvas.getContext('2d');
     context.drawImage(video, 0, 0);
+    
+    console.log("Photo captured, dimensions:", canvas.width, "x", canvas.height);
     
     capturedImage = canvas.toDataURL('image/jpeg');
     cameraPreview.src = capturedImage;
@@ -323,7 +339,15 @@ function capturePhoto() {
         stream = null;
     }
 }
-
+// Add this before your camera code
+if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    cameraBtn.disabled = true;
+    cameraBtn.textContent = "Camera not supported by your browser";
+    console.error("getUserMedia is not supported in this browser");
+}
+// Try this simple request instead if the environment mode isn't working
+stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        
 // Delete photo functionality
 deletePhotoBtn.addEventListener('click', () => {
     capturedImage = null;
