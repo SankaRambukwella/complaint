@@ -258,53 +258,85 @@
 
     <script>
      let capturedImage = null;
-        const video = document.getElementById('camera');
-        const cameraBtn = document.getElementById('camera-btn');
-        const cameraPreview = document.getElementById('camera-preview');
-        const deletePhotoBtn = document.getElementById('delete-photo-btn');
-        const form = document.getElementById('complaintForm');
-        const qrContainer = document.getElementById('qr-container');
-        const qrCodeDiv = document.getElementById('qr-code');
-        const successMessage = document.getElementById('success-message');
-        const submitBtn = document.getElementById('submit-btn');
-        const loading = document.querySelector('.loading');
+let stream = null;
 
-        // Camera Functionality
-        cameraBtn.addEventListener('click', async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' } 
-                });
-                video.srcObject = stream;
-                video.style.display = 'block';
-                video.play();
-            } catch (error) {
-                alert('Error accessing the camera. Please allow camera permissions.');
-            }
+const video = document.getElementById('camera');
+const cameraBtn = document.getElementById('camera-btn');
+const deletePhotoBtn = document.getElementById('delete-photo-btn');
+const cameraPreview = document.getElementById('camera-preview');
+const form = document.getElementById('complaintForm');
+const loadingElement = document.querySelector('.loading');
+const successMessage = document.getElementById('success-message');
+const qrContainer = document.getElementById('qr-container');
+
+// Function to start the camera
+async function startCamera() {
+    try {
+        // Stop any existing stream
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        
+        stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: 'environment'  // Prefer back camera on mobile
+            } 
         });
+        
+        video.srcObject = stream;
+        video.style.display = 'block';
+        cameraPreview.style.display = 'none';
+        deletePhotoBtn.style.display = 'none';
+        
+        cameraBtn.textContent = 'Capture Photo';
+        cameraBtn.removeEventListener('click', startCamera);
+        cameraBtn.addEventListener('click', capturePhoto);
+        
+    } catch (err) {
+        console.error("Camera error: ", err);
+        alert("Could not access camera. Please check permissions.");
+    }
+}
 
-        // Capture Image
-        video.addEventListener('click', () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            capturedImage = canvas.toDataURL('image/png');
+// Function to capture photo
+function capturePhoto() {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0);
+    
+    capturedImage = canvas.toDataURL('image/jpeg');
+    cameraPreview.src = capturedImage;
+    
+    video.style.display = 'none';
+    cameraPreview.style.display = 'block';
+    deletePhotoBtn.style.display = 'block';
+    
+    cameraBtn.textContent = 'Take Another Photo';
+    cameraBtn.removeEventListener('click', capturePhoto);
+    cameraBtn.addEventListener('click', startCamera);
+    
+    // Stop video stream
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+}
 
-            cameraPreview.src = capturedImage;
-            cameraPreview.style.display = 'block';
-            video.srcObject.getTracks().forEach(track => track.stop());
-            video.style.display = 'none';
-            deletePhotoBtn.style.display = 'block';
-        });
+// Delete photo functionality
+deletePhotoBtn.addEventListener('click', () => {
+    capturedImage = null;
+    cameraPreview.src = '';
+    cameraPreview.style.display = 'none';
+    deletePhotoBtn.style.display = 'none';
+    
+    // Start camera again
+    startCamera();
+});
 
-        // Delete Photo
-        deletePhotoBtn.addEventListener('click', () => {
-            capturedImage = null;
-            cameraPreview.style.display = 'none';
-            deletePhotoBtn.style.display = 'none';
-        });
+// Initial setup - attach the startCamera function to the button
+cameraBtn.addEventListener('click', startCamera);
 
         // Form Submission
         form.addEventListener('submit', async (e) => {
