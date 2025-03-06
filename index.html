@@ -89,7 +89,7 @@
         }
         .camera-actions {
             display: flex;
-            gap: 10px;
+            justify-content: center;
             width: 100%;
         }
         .btn {
@@ -181,6 +181,9 @@
             font-size: 0.8rem;
             color: #7f8c8d;
         }
+        #submit-btn {
+            background-color: #3498db;
+        }
     </style>
 </head>
 <body>
@@ -189,8 +192,13 @@
         <button id="language-btn" class="lang-btn">English / සිංහල</button>
         
         <div class="form-header">
-            <!-- You can replace this with an actual logo -->
-            <div class="logo" id="logo">DDG lOGISTICS</div>
+            <!-- Logo styled to match the screenshot -->
+            <div class="logo" id="logo">
+                <svg width="180" height="50" viewBox="0 0 180 50">
+                    <rect width="180" height="50" fill="#3498db" rx="5"></rect>
+                    <text x="90" y="32" font-size="20" text-anchor="middle" fill="white" font-weight="bold">DDG LOGISTICS</text>
+                </svg>
+            </div>
             <h2 class="form-title" id="form-title">DDG Logistics Complaint Form</h2>
             <p class="form-subtitle" id="form-subtitle">Submit your concerns for prompt resolution</p>
         </div>
@@ -220,19 +228,17 @@
             <div class="camera-container">
                 <video id="camera" width="100%" height="auto"></video>
                 <img id="camera-preview" alt="Complaint Image">
-                
-                <div class="camera-actions">
-                    <button type="button" id="camera-btn" class="btn" style="margin-right: 5px;">Take Photo (Optional)</button>
-                    <button type="button" id="delete-photo-btn" class="btn" style="margin-left: 5px;">Delete Photo</button>
-                </div>
             </div>
+            
+            <button type="button" id="camera-btn" class="btn">Take Photo (Optional)</button>
+            <button type="button" id="delete-photo-btn" class="btn" style="margin-top: 10px;">Delete Photo</button>
             
             <div class="loading">
                 <div class="loading-spinner"></div>
                 <p id="loading-text">Processing your complaint...</p>
             </div>
             
-            <button type="submit" class="btn" id="submit-btn">Submit Complaint</button>
+            <button type="submit" class="btn" id="submit-btn" style="margin-top: 20px;">Submit Complaint</button>
         </form>
         
         <div class="success-message" id="success-message">
@@ -261,15 +267,6 @@
         const successMessage = document.getElementById('success-message');
         const qrContainer = document.getElementById('qr-container');
         
-        // Create a placeholder logo (replace with actual logo if available)
-        const logoDiv = document.getElementById('logo');
-        logoDiv.innerHTML = `
-            <svg width="150" height="50" viewBox="0 0 150 50">
-                <rect width="150" height="50" fill="#3498db" rx="10"></rect>
-                <text x="75" y="32" font-size="24" text-anchor="middle" fill="white" font-weight="bold">DDG LOGISTICS</text>
-            </svg>
-        `;
-
         // Camera Functionality
         let stream = null;
         
@@ -357,13 +354,12 @@
                 issue: document.getElementById('issue').value,
                 contact: document.getElementById('contact').value,
                 image: capturedImage || '',
-                timestamp: new Date().toLocaleString()
+                timestamp: new Date().toLocaleString(),
+                reference: `DDG-${Date.now().toString().slice(-6)}`
             };
 
             try {
-                // Try to send data to Google Apps Script (replaced with simulated success for demo)
-                // In production, uncomment the fetch code below
-               
+                
                 const response = await fetch('https://script.google.com/macros/s/AKfycbxzYjfNN_2sF8g_NzwiJesWDc9WWrbNe1hGQL7KrTSIFeHz1zFoOEWDoWBdWDv5nCCYSg/exec', {
                     method: 'POST',
                     mode: 'no-cors',
@@ -372,8 +368,7 @@
                     },
                     body: JSON.stringify(formData)
                 });
-              
-                
+               
                 // Simulate API delay
                 await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -406,9 +401,12 @@
             element.style.padding = '20px';
             element.innerHTML = `
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <h1 style="color: #3498db; margin-bottom: 5px;">DDG Logistics</h1>
-                    <h2 style="margin-top: 0;">Complaint Receipt</h2>
-                    <p style="color: #7f8c8d;">Reference #: DDG-${Date.now().toString().slice(-6)}</p>
+                    <div style="background-color: #3498db; color: white; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+                        <h1 style="margin: 0;">DDG LOGISTICS</h1>
+                    </div>
+                    <h2 style="margin-top: 0; color: #2c3e50;">Complaint Form</h2>
+                    <p style="color: #7f8c8d;">Reference #: ${formData.reference}</p>
+                    <p style="color: #7f8c8d;">Date: ${formData.timestamp}</p>
                 </div>
                 
                 <div style="border: 1px solid #e0e0e0; border-radius: 5px; padding: 15px; margin-bottom: 20px;">
@@ -431,10 +429,6 @@
                             <td style="padding: 8px 5px; font-weight: bold;">Contact Number:</td>
                             <td style="padding: 8px 5px;">${formData.contact}</td>
                         </tr>
-                        <tr>
-                            <td style="padding: 8px 5px; font-weight: bold;">Submission Date:</td>
-                            <td style="padding: 8px 5px;">${formData.timestamp}</td>
-                        </tr>
                     </table>
                 </div>
                 
@@ -452,15 +446,16 @@
                 </div>
                 ` : ''}
                 
-                <div style="margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 0.8em;">
-                    <p>This is an automatically generated receipt.</p>
-                    <p>© 2025 Sanka Rambukwella. All Rights Reserved.</p>
+                <div style="margin-top: 30px; text-align: center; color: #7f8c8d; font-size: 0.8em; border-top: 1px solid #eee; padding-top: 15px;">
+                    <p>This is an automatically generated receipt for your complaint submission.</p>
+                    <p>Please keep this document for your reference.</p>
+                    <p style="margin-top: 15px; font-weight: bold;">© 2025 Sanka Rambukwella. All Rights Reserved.</p>
                 </div>
             `;
 
             const opt = {
                 margin: 1,
-                filename: `DDG_Complaint_${formData.name.replace(/\s+/g, '_')}_${Date.now()}.pdf`,
+                filename: `DDG_Complaint_${formData.reference}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
@@ -471,13 +466,13 @@
 
         function generateQRCode(formData) {
             const qrData = JSON.stringify({
-                ref: `DDG-${Date.now().toString().slice(-6)}`,
+                ref: formData.reference,
                 name: formData.name,
                 branch: formData.branch,
                 location: formData.location,
                 issue: formData.issue.substring(0, 100) + (formData.issue.length > 100 ? '...' : ''),
                 contact: formData.contact,
-                timestamp: formData.timestamp
+                date: formData.timestamp
             });
             
             document.getElementById('qr-code').innerHTML = '';
@@ -505,7 +500,7 @@
                     const qrImage = qrCanvas.toDataURL("image/png");
                     const downloadLink = document.createElement("a");
                     downloadLink.href = qrImage;
-                    downloadLink.download = `DDG_Complaint_QR_${Date.now()}.png`;
+                    downloadLink.download = `DDG_Complaint_QR_${formData.reference}.png`;
                     document.body.appendChild(downloadLink);
                     downloadLink.click();
                     document.body.removeChild(downloadLink);
