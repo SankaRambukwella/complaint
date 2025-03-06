@@ -257,110 +257,47 @@
     </div>
 
     <script>
-     let capturedImage = null;
-let stream = null;
+   let capturedImage = null;
+        const video = document.getElementById('camera');
+        const cameraBtn = document.getElementById('camera-btn');
+        const cameraPreview = document.getElementById('camera-preview');
+        const form = document.getElementById('complaintForm');
 
-const video = document.getElementById('camera');
-const cameraBtn = document.getElementById('camera-btn');
-const deletePhotoBtn = document.getElementById('delete-photo-btn');
-const cameraPreview = document.getElementById('camera-preview');
-const form = document.getElementById('complaintForm');
-const loadingElement = document.querySelector('.loading');
-const successMessage = document.getElementById('success-message');
-const qrContainer = document.getElementById('qr-container');
+        // Camera Functionality
+        cameraBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment'  // Prefer back camera on mobile
+                    } 
+                });
+                video.srcObject = stream;
+                video.style.display = 'block';
+                cameraPreview.style.display = 'none';
 
-// Function to start the camera
-// Modify your startCamera function to provide more detailed error information
-async function startCamera() {
-    try {
-        // Stop any existing stream
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-        }
-        
-        console.log("Requesting camera access...");
-        stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { 
-                facingMode: 'environment'  // Prefer back camera on mobile
-            } 
+                video.onloadedmetadata = () => {
+                    video.play();
+                    setTimeout(() => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        canvas.getContext('2d').drawImage(video, 0, 0);
+                        
+                        capturedImage = canvas.toDataURL('image/jpeg');
+                        cameraPreview.src = capturedImage;
+                        
+                        video.style.display = 'none';
+                        cameraPreview.style.display = 'block';
+
+                        // Stop video stream
+                        stream.getTracks().forEach(track => track.stop());
+                    }, 3000);  // Capture after 3 seconds
+                };
+            } catch (err) {
+                console.error("Camera error: ", err);
+                alert("Could not access camera. Please check permissions.");
+            }
         });
-        console.log("Camera access granted!");
-        
-        video.srcObject = stream;
-        
-        // Add event listener to make sure video is loaded and playing
-        video.onloadedmetadata = function(e) {
-            console.log("Video metadata loaded, playing video");
-            video.play();
-            video.style.display = 'block';
-            cameraPreview.style.display = 'none';
-            deletePhotoBtn.style.display = 'none';
-        };
-        
-        cameraBtn.textContent = 'Capture Photo';
-        cameraBtn.removeEventListener('click', startCamera);
-        cameraBtn.addEventListener('click', capturePhoto);
-        
-    } catch (err) {
-        console.error("Camera error details:", err);
-        alert("Could not access camera: " + err.message);
-    }
-}
-// Function to capture photo
-function capturePhoto() {
-    if (!video.videoWidth) {
-        console.error("Video not ready yet");
-        alert("Camera not ready. Please try again.");
-        return;
-    }
-    
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const context = canvas.getContext('2d');
-    context.drawImage(video, 0, 0);
-    
-    console.log("Photo captured, dimensions:", canvas.width, "x", canvas.height);
-    
-    capturedImage = canvas.toDataURL('image/jpeg');
-    cameraPreview.src = capturedImage;
-    
-    video.style.display = 'none';
-    cameraPreview.style.display = 'block';
-    deletePhotoBtn.style.display = 'block';
-    
-    cameraBtn.textContent = 'Take Another Photo';
-    cameraBtn.removeEventListener('click', capturePhoto);
-    cameraBtn.addEventListener('click', startCamera);
-    
-    // Stop video stream
-    if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        stream = null;
-    }
-}
-// Add this before your camera code
-if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    cameraBtn.disabled = true;
-    cameraBtn.textContent = "Camera not supported by your browser";
-    console.error("getUserMedia is not supported in this browser");
-}
-// Try this simple request instead if the environment mode isn't working
-stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        
-// Delete photo functionality
-deletePhotoBtn.addEventListener('click', () => {
-    capturedImage = null;
-    cameraPreview.src = '';
-    cameraPreview.style.display = 'none';
-    deletePhotoBtn.style.display = 'none';
-    
-    // Start camera again
-    startCamera();
-});
-
-// Initial setup - attach the startCamera function to the button
-cameraBtn.addEventListener('click', startCamera);
 
         // Form Submission
         form.addEventListener('submit', async (e) => {
