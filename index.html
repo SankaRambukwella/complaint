@@ -224,18 +224,18 @@
 
                 // Generate PDF Receipt
                 const element = document.createElement('div');
-                element.innerHTML = 
+                element.innerHTML = `
                     <h2>DDG Logistics Complaint Receipt</h2>
                     <p><strong>Name:</strong> ${formData.name}</p>
                     <p><strong>Branch:</strong> ${formData.branch}</p>
                     <p><strong>Location:</strong> ${formData.location}</p>
                     <p><strong>Issue:</strong> ${formData.issue}</p>
                     <p><strong>Contact:</strong> ${formData.contact}</p>
-                ;
+                `;
 
                 const opt = {
                     margin: 1,
-                    filename: complaint_${formData.name}_${Date.now()}.pdf,
+                    filename: `complaint_${formData.name}_${Date.now()}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { scale: 2 },
                     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
@@ -303,7 +303,7 @@
         contact: document.getElementById('contact').value
     };
     
-    const qrData = Name: ${formData.name}\nBranch: ${formData.branch}\nLocation: ${formData.location}\nIssue: ${formData.issue}\nContact: ${formData.contact};
+    const qrData = `Name: ${formData.name}\nBranch: ${formData.branch}\nLocation: ${formData.location}\nIssue: ${formData.issue}\nContact: ${formData.contact}`;
     
     document.getElementById('qr-code').innerHTML = '';
     const qrCode = new QRCode(document.getElementById('qr-code'), {
@@ -325,7 +325,7 @@
             const qrImage = qrCanvas.toDataURL("image/png");
             const downloadLink = document.createElement("a");
             downloadLink.href = qrImage;
-            downloadLink.download = complaint_qr_${Date.now()}.png;
+            downloadLink.download = `complaint_qr_${Date.now()}.png`;
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
