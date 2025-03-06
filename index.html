@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deputy Director General (Logistics) Complaint Form</title>
+    <title>DDG Logistics Complaint Form</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
@@ -117,7 +117,7 @@
 
     <div class="complaint-container">
         <button id="language-btn" class="lang-btn">English / සිංහල</button>
-        <h2 class="form-title" id="form-title">Deputy Director General (Logistics) Complaint Form</h2>
+        <h2 class="form-title" id="form-title">DDG Logistics Complaint Form</h2>
         
         <form id="complaintForm">
             <div class="form-group">
@@ -158,7 +158,6 @@
         let capturedImage = null;
         const video = document.getElementById('camera');
         const cameraBtn = document.getElementById('camera-btn');
-        const deletePhotoBtn = document.getElementById("delete-photo-btn");
         const cameraPreview = document.getElementById('camera-preview');
         const form = document.getElementById('complaintForm');
 
@@ -197,12 +196,6 @@
                 alert("Could not access camera. Please check permissions.");
             }
         });
-         deletePhotoBtn.addEventListener("click", () => {
-        capturedImage = null;
-        cameraPreview.style.display = "none";
-        deletePhotoBtn.style.display = "none";
-    });
-
 
         // Form Submission
         form.addEventListener('submit', async (e) => {
@@ -263,7 +256,7 @@
 
         const translations = {
             en: {
-                title: "Deputy Director General (Logistics) Complaint Form",
+                title: "DDG Logistics Complaint Form",
                 name: "Complainer Name *",
                 branch: "Branch Name *",
                 location: "Location *",
@@ -273,9 +266,9 @@
                 takePhoto: "Take Photo (Optional)"
             },
             si: {
-                title: "නියෝජ්‍ය අධ්‍යක්ෂ ජනරාල් (සැපයීම්) පැමිණිලි පෝරමය",
+                title: "DDG ලොජිස්ටික්ස් පැමිණිලි පෝරමය",
                 name: "පැමිණිලිකරුගේ නම *",
-                branch: "ශාඛාව *",
+                branch: "ශාඛා නාමය *",
                 location: "ස්ථානය *",
                 issue: "ගැටළුව විස්තර කරන්න *",
                 contact: "දුරකථන අංකය (ජංගම) *",
