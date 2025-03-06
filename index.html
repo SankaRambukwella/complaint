@@ -7,11 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f0f2f5;
@@ -28,321 +24,141 @@
             width: 100%;
             margin: 20px auto;
         }
-        .form-title {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            font-weight: 500;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-title { text-align: center; color: #2c3e50; margin-bottom: 20px; font-size: 1.5rem; font-weight: 500; }
+        .form-group { margin-bottom: 20px; }
         .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #34495e;
+            display: block; margin-bottom: 8px; font-weight: 500; color: #34495e;
         }
-        .form-group input, 
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: #f9f9f9;
-            transition: border-color 0.3s ease;
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+            font-size: 16px; background-color: #f9f9f9; transition: border-color 0.3s ease;
         }
-        .form-group input:focus, 
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52,152,219,0.3);
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none; border-color: #3498db; box-shadow: 0 0 5px rgba(52,152,219,0.3);
         }
         .camera-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
+            display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;
         }
         #camera, #camera-preview {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 10px;
-            display: none;
+            max-width: 100%; max-height: 300px; border-radius: 10px; display: none;
         }
         .btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.3s ease;
+            display: block; width: 100%; padding: 15px; background-color: #3498db; 
+            color: white; border: none; border-radius: 8px; font-size: 16px;
+            cursor: pointer; margin-top: 10px; transition: background-color 0.3s ease;
         }
-        .btn:hover {
-            background-color: #2980b9;
-        }
-        #camera-btn {
-            background-color: #2ecc71;
-            margin-bottom: 15px;
-        }
-        #camera-btn:hover {
-            background-color: #27ae60;
-        }
+        .btn:hover { background-color: #2980b9; }
+        #camera-btn { background-color: #2ecc71; margin-bottom: 15px; }
+        #camera-btn:hover { background-color: #27ae60; }
         .lang-btn {
-            display: block;
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 16px;
-            cursor: pointer;
-            color: white;
-            background-color: #e67e22;
-            border: none;
-            padding: 10px;
-            border-radius: 8px;
-            width: 100%;
+            display: block; text-align: center; margin-bottom: 15px; font-size: 16px;
+            cursor: pointer; color: white; background-color: #e67e22;
+            border: none; padding: 10px; border-radius: 8px; width: 100%;
         }
-        .lang-btn:hover {
-            background-color: #d35400;
-        }
+        .lang-btn:hover { background-color: #d35400; }
     </style>
 </head>
 <body>
 
-    <div class="complaint-container">
-        <button id="language-btn" class="lang-btn">English / සිංහල</button>
-        <h2 class="form-title" id="form-title">DDG Logistics Complaint Form</h2>
-        
-        <form id="complaintForm">
-            <div class="form-group">
-                <label for="name" id="label-name">Complainer Name *</label>
-                <input type="text" id="name" required placeholder="Enter your full name">
-            </div>
-            <div class="form-group">
-                <label for="branch" id="label-branch">Branch Name *</label>
-                <input type="text" id="branch" required placeholder="Enter branch name">
-            </div>
-            <div class="form-group">
-                <label for="location" id="label-location">Location *</label>
-                <input type="text" id="location" required placeholder="Enter complaint location">
-            </div>
-            <div class="form-group">
-                <label for="issue" id="label-issue">Issue Description *</label>
-                <textarea id="issue" rows="4" required placeholder="Describe your complaint in detail"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="contact" id="label-contact">Contact Number (Mobile Number) *</label>
-                <input type="tel" id="contact" required placeholder="Enter contact number" pattern="[0-9]{10}" inputmode="numeric">
-            </div>
-            
-            <div class="camera-container">
-    <video id="camera" width="100%" height="auto"></video>
-    <img id="camera-preview" alt="Complaint Image">
-    <button type="button" id="delete-photo-btn" class="btn" style="background-color: #e74c3c; display: none;">Delete Photo</button>
-</div>
-            
-            <button type="button" id="camera-btn" class="btn">Take Photo (Optional)</button>
-            <button type="submit" class="btn" id="submit-btn">Submit Complaint</button>
-        </form>
-        <div class="qr-container">
-            <div id="qr-code"></div>
+<div class="complaint-container">
+    <button id="language-btn" class="lang-btn">English / සිංහල</button>
+    <h2 class="form-title" id="form-title">DDG Logistics Complaint Form</h2>
+
+    <form id="complaintForm">
+        <div class="form-group">
+            <label for="name">Complainer Name *</label>
+            <input type="text" id="name" required placeholder="Enter your full name">
         </div>
-    </div>
+        <div class="form-group">
+            <label for="branch">Branch Name *</label>
+            <input type="text" id="branch" required placeholder="Enter branch name">
+        </div>
+        <div class="form-group">
+            <label for="location">Location *</label>
+            <input type="text" id="location" required placeholder="Enter complaint location">
+        </div>
+        <div class="form-group">
+            <label for="issue">Issue Description *</label>
+            <textarea id="issue" rows="4" required placeholder="Describe your complaint in detail"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="contact">Contact Number (Mobile Number) *</label>
+            <input type="tel" id="contact" required placeholder="Enter contact number" pattern="[0-9]{10}" inputmode="numeric">
+        </div>
 
-    <script>
-      const cameraBtn = document.getElementById('camera-btn');
-const deletePhotoBtn = document.getElementById('delete-photo-btn');
-const video = document.getElementById('camera');
-const cameraPreview = document.getElementById('camera-preview');
-let capturedImage = null;
+        <div class="camera-container">
+            <video id="camera" width="100%" height="auto"></video>
+            <img id="camera-preview" alt="Complaint Image">
+            <button type="button" id="delete-photo-btn" class="btn" style="background-color: #e74c3c; display: none;">Delete Photo</button>
+        </div>
 
-// Take Photo Function
-cameraBtn.addEventListener('click', async () => {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-        video.srcObject = stream;
-        video.style.display = 'block';
-        cameraPreview.style.display = 'none';
-        deletePhotoBtn.style.display = 'none';
+        <button type="button" id="camera-btn" class="btn">Take Photo (Optional)</button>
+        <button type="submit" class="btn" id="submit-btn">Submit Complaint</button>
+    </form>
+</div>
 
-        video.onloadedmetadata = () => {
-            video.play();
+<script>
+    const form = document.getElementById("complaintForm");
+    const cameraBtn = document.getElementById("camera-btn");
+    const deletePhotoBtn = document.getElementById("delete-photo-btn");
+    const video = document.getElementById("camera");
+    const cameraPreview = document.getElementById("camera-preview");
+    let capturedImage = null;
+
+    cameraBtn.addEventListener("click", async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            video.style.display = "block";
+
             setTimeout(() => {
-                const canvas = document.createElement('canvas');
+                const canvas = document.createElement("canvas");
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
+                canvas.getContext("2d").drawImage(video, 0, 0);
+                capturedImage = canvas.toDataURL("image/jpeg");
 
-                capturedImage = canvas.toDataURL('image/jpeg');
                 cameraPreview.src = capturedImage;
-
-                video.style.display = 'none';
-                cameraPreview.style.display = 'block';
-                deletePhotoBtn.style.display = 'block';  // Show delete button
+                video.style.display = "none";
+                cameraPreview.style.display = "block";
+                deletePhotoBtn.style.display = "block";
 
                 stream.getTracks().forEach(track => track.stop());
             }, 3000);
-        };
-    } catch (err) {
-        console.error("Camera error:", err);
-        alert("Could not access camera. Please check permissions.");
-    }
-});
-
-// Delete Photo Function
-deletePhotoBtn.addEventListener('click', () => {
-    capturedImage = null;
-    cameraPreview.style.display = 'none';
-    deletePhotoBtn.style.display = 'none';
-});
-
-        // Form Submission
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            // Prepare form data
-            const formData = {
-                name: document.getElementById('name').value,
-                branch: document.getElementById('branch').value,
-                location: document.getElementById('location').value,
-                issue: document.getElementById('issue').value,
-                contact: document.getElementById('contact').value,
-                image: capturedImage || ''
-            };
-
-            try {
-                // Send data to Google Apps Script
-                const response = await fetch('https://script.google.com/macros/s/AKfycbxzYjfNN_2sF8g_NzwiJesWDc9WWrbNe1hGQL7KrTSIFeHz1zFoOEWDoWBdWDv5nCCYSg/exec', {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                // Generate PDF Receipt
-                const element = document.createElement('div');
-                element.innerHTML = `
-                    <h2>DDG Logistics Complaint Receipt</h2>
-                    <p><strong>Name:</strong> ${formData.name}</p>
-                    <p><strong>Branch:</strong> ${formData.branch}</p>
-                    <p><strong>Location:</strong> ${formData.location}</p>
-                    <p><strong>Issue:</strong> ${formData.issue}</p>
-                    <p><strong>Contact:</strong> ${formData.contact}</p>
-                `;
-
-                const opt = {
-                    margin: 1,
-                    filename: `complaint_${formData.name}_${Date.now()}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-                };
-
-                html2pdf().set(opt).from(element).save();
-
-                alert('Complaint submitted successfully!');
-                form.reset();
-                capturedImage = null;
-                cameraPreview.style.display = 'none';
-
-            } catch (error) {
-                console.error('Submission error:', error);
-                alert('Failed to submit complaint. Please try again.');
-            }
-        });
-
-        const translations = {
-            en: {
-                title: "DDG Logistics Complaint Form",
-                name: "Complainer Name *",
-                branch: "Branch Name *",
-                location: "Location *",
-                issue: "Issue Description *",
-                contact: "Contact Number (Mobile Number) *",
-                submit: "Submit Complaint",
-                takePhoto: "Take Photo (Optional)"
-            },
-            si: {
-                title: "DDG ලොජිස්ටික්ස් පැමිණිලි පෝරමය",
-                name: "පැමිණිලිකරුගේ නම *",
-                branch: "ශාඛා නාමය *",
-                location: "ස්ථානය *",
-                issue: "ගැටළුව විස්තර කරන්න *",
-                contact: "දුරකථන අංකය (ජංගම) *",
-                submit: "පැමිණිලි යවන්න",
-                takePhoto: "ඡායාරූපය ගන්න (අනිවාර්යය නොවේ)"
-            }
-        };
-
-        let currentLang = "en"; // Default Language
-
-        document.getElementById("language-btn").addEventListener("click", () => {
-            currentLang = currentLang === "en" ? "si" : "en";
-
-            document.getElementById("form-title").textContent = translations[currentLang].title;
-            document.getElementById("label-name").textContent = translations[currentLang].name;
-            document.getElementById("label-branch").textContent = translations[currentLang].branch;
-            document.getElementById("label-location").textContent = translations[currentLang].location;
-            document.getElementById("label-issue").textContent = translations[currentLang].issue;
-            document.getElementById("label-contact").textContent = translations[currentLang].contact;
-            document.getElementById("submit-btn").textContent = translations[currentLang].submit;
-            document.getElementById("camera-btn").textContent = translations[currentLang].takePhoto;
-        });
-
-        document.getElementById('complaintForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = {
-        name: document.getElementById('name').value,
-        branch: document.getElementById('branch').value,
-        location: document.getElementById('location').value,
-        issue: document.getElementById('issue').value,
-        contact: document.getElementById('contact').value
-    };
-    
-    const qrData = `Name: ${formData.name}\nBranch: ${formData.branch}\nLocation: ${formData.location}\nIssue: ${formData.issue}\nContact: ${formData.contact}`;
-    
-    document.getElementById('qr-code').innerHTML = '';
-    const qrCode = new QRCode(document.getElementById('qr-code'), {
-        text: qrData,
-        width: 200,
-        height: 200
-    });
-    
-    // Add a download button for the QR code
-    const downloadBtn = document.createElement('button');
-    downloadBtn.textContent = 'Download QR Code';
-    downloadBtn.classList.add('btn');
-    downloadBtn.style.marginTop = '10px';
-    
-    // Add event listener for downloading the QR code
-    downloadBtn.addEventListener('click', () => {
-        const qrCanvas = document.querySelector('#qr-code canvas');
-        if (qrCanvas) {
-            const qrImage = qrCanvas.toDataURL("image/png");
-            const downloadLink = document.createElement("a");
-            downloadLink.href = qrImage;
-            downloadLink.download = `complaint_qr_${Date.now()}.png`;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
+        } catch (err) {
+            alert("Camera access denied. Please allow camera permissions.");
         }
     });
-    
-    // Append the download button below the QR code
-    document.getElementById('qr-code').appendChild(downloadBtn);
-    
-    alert('Complaint submitted successfully! QR code generated.');
-    document.getElementById('complaintForm').reset();
-});
-    </script>
+
+    deletePhotoBtn.addEventListener("click", () => {
+        capturedImage = null;
+        cameraPreview.style.display = "none";
+        deletePhotoBtn.style.display = "none";
+    });
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = {
+            name: document.getElementById("name").value,
+            branch: document.getElementById("branch").value,
+            location: document.getElementById("location").value,
+            issue: document.getElementById("issue").value,
+            contact: document.getElementById("contact").value,
+            image: capturedImage || ""
+        };
+
+        await fetch("'https://script.google.com/macros/s/AKfycbxzYjfNN_2sF8g_NzwiJesWDc9WWrbNe1hGQL7KrTSIFeHz1zFoOEWDoWBdWDv5nCCYSg/exec'", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        });
+
+        alert("Complaint submitted successfully!");
+        form.reset();
+        cameraPreview.style.display = "none";
+    });
+</script>
+
 </body>
 </html>
