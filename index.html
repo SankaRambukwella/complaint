@@ -246,6 +246,7 @@
 
     <script>
         let capturedImage = null;
+        let currentLang = "en"; // Default Language
         const video = document.getElementById('camera');
         const cameraBtn = document.getElementById('camera-btn');
         const cameraPreview = document.getElementById('camera-preview');
@@ -253,6 +254,96 @@
         const qrContainer = document.getElementById('qr-container');
         const successMessage = document.getElementById('success-message');
         const pdfPreview = document.getElementById('pdf-preview');
+
+        const translations = {
+            en: {
+                title: "DDG Logistics Complaint Form",
+                name: "Complainer Name *",
+                branch: "Branch Name *",
+                location: "Location *",
+                issue: "Issue Description *",
+                contact: "Contact Number (Mobile Number) *",
+                submit: "Submit Complaint",
+                takePhoto: "Take Photo (Optional)",
+                qrTitle: "Complaint Reference QR Code",
+                downloadQR: "Download QR Code",
+                downloadPDF: "Download Receipt as PDF",
+                successMsg: "Your complaint has been submitted successfully!",
+                namePlaceholder: "Enter your full name",
+                branchPlaceholder: "Enter branch name",
+                locationPlaceholder: "Enter complaint location",
+                issuePlaceholder: "Describe your complaint in detail",
+                contactPlaceholder: "Enter contact number",
+                receipt: "Complaint Receipt",
+                reference: "Reference:",
+                date: "Date:",
+                complaintDetails: "Complaint Details",
+                issueDescription: "Issue Description",
+                attachedPhoto: "Attached Photo",
+                autoReceipt: "This is an automated receipt. Thank you for your feedback.",
+                contactSupport: "For any inquiries, please contact DDG Logistics Support."
+            },
+            si: {
+                title: "DDG ලොජිස්ටික්ස් පැමිණිලි පෝරමය",
+                name: "පැමිණිලිකරුගේ නම *",
+                branch: "ශාඛා නාමය *",
+                location: "ස්ථානය *",
+                issue: "ගැටළුව විස්තර කරන්න *",
+                contact: "දුරකථන අංකය (ජංගම) *",
+                submit: "පැමිණිලි යවන්න",
+                takePhoto: "ඡායාරූපය ගන්න (අනිවාර්යය නොවේ)",
+                qrTitle: "පැමිණිලි යොමු QR කේතය",
+                downloadQR: "QR කේතය බාගත කරන්න",
+                downloadPDF: "රිසිට්පත PDF ලෙස බාගත කරන්න",
+                successMsg: "ඔබගේ පැමිණිල්ල සාර්ථකව යවා ඇත!",
+                namePlaceholder: "ඔබගේ සම්පූර්ණ නම ඇතුළත් කරන්න",
+                branchPlaceholder: "ශාඛා නාමය ඇතුළත් කරන්න",
+                locationPlaceholder: "පැමිණිලි ස්ථානය ඇතුළත් කරන්න",
+                issuePlaceholder: "ඔබගේ පැමිණිල්ල විස්තරාත්මකව විස්තර කරන්න",
+                contactPlaceholder: "දුරකථන අංකය ඇතුළත් කරන්න",
+                receipt: "පැමිණිලි ලදුපත",
+                reference: "යොමු අංකය:",
+                date: "දිනය:",
+                complaintDetails: "පැමිණිලි විස්තර",
+                issueDescription: "ගැටලු විස්තරය",
+                attachedPhoto: "අමුණා ඇති ඡායාරූපය",
+                autoReceipt: "මෙය ස්වයංක්‍රීය ලදුපතකි. ඔබගේ ප්‍රතිචාරයට ස්තුතියි.",
+                contactSupport: "ඕනෑම විමසීමක් සඳහා, කරුණාකර DDG ලොජිස්ටික්ස් සහාය අමතන්න."
+            }
+        };
+
+        // Update placeholders when language changes
+        function updatePlaceholders() {
+            document.getElementById("name").placeholder = translations[currentLang].namePlaceholder;
+            document.getElementById("branch").placeholder = translations[currentLang].branchPlaceholder;
+            document.getElementById("location").placeholder = translations[currentLang].locationPlaceholder;
+            document.getElementById("issue").placeholder = translations[currentLang].issuePlaceholder;
+            document.getElementById("contact").placeholder = translations[currentLang].contactPlaceholder;
+        }
+
+        // Language switcher
+        document.getElementById("language-btn").addEventListener("click", () => {
+            currentLang = currentLang === "en" ? "si" : "en";
+
+            document.getElementById("form-title").textContent = translations[currentLang].title;
+            document.getElementById("label-name").textContent = translations[currentLang].name;
+            document.getElementById("label-branch").textContent = translations[currentLang].branch;
+            document.getElementById("label-location").textContent = translations[currentLang].location;
+            document.getElementById("label-issue").textContent = translations[currentLang].issue;
+            document.getElementById("label-contact").textContent = translations[currentLang].contact;
+            document.getElementById("submit-btn").textContent = translations[currentLang].submit;
+            document.getElementById("camera-btn").textContent = translations[currentLang].takePhoto;
+            document.getElementById("qr-title").textContent = translations[currentLang].qrTitle;
+            document.getElementById("download-qr-btn").textContent = translations[currentLang].downloadQR;
+            document.getElementById("download-pdf-btn").textContent = translations[currentLang].downloadPDF;
+            document.getElementById("success-message").textContent = translations[currentLang].successMsg;
+            
+            // Update placeholders
+            updatePlaceholders();
+        });
+
+        // Set initial placeholders
+        updatePlaceholders();
 
         // Camera Functionality
         cameraBtn.addEventListener('click', async () => {
@@ -302,7 +393,8 @@
                 issue: document.getElementById('issue').value,
                 contact: document.getElementById('contact').value,
                 image: capturedImage || '',
-                timestamp: new Date().toLocaleString()
+                timestamp: new Date().toLocaleString(),
+                language: currentLang // Store current language
             };
 
             try {
@@ -338,15 +430,16 @@
             // Create unique reference number
             const refNumber = 'DDG-' + Date.now().toString().slice(-8);
             
-            // Prepare QR data
-            const qrData = JSON.stringify({
+            // Properly encode data for QR code to handle multilingual content
+            const qrData = encodeURIComponent(JSON.stringify({
                 reference: refNumber,
                 name: formData.name,
                 branch: formData.branch,
                 location: formData.location,
                 contact: formData.contact,
-                date: formData.timestamp
-            });
+                date: formData.timestamp,
+                language: formData.language
+            }));
             
             // Clear previous QR code
             document.getElementById('qr-code').innerHTML = '';
@@ -395,44 +488,48 @@
             // Create reference number if not already generated
             const refNumber = 'DDG-' + Date.now().toString().slice(-8);
             
-            // Create PDF content
+            // Use the correct language for PDF content
+            const lang = formData.language || currentLang;
+            const t = translations[lang];
+            
+            // Create PDF content with proper multilingual support
             const pdfContent = document.createElement('div');
             pdfContent.innerHTML = `
                 <div style="padding: 20px; font-family: Arial, sans-serif;">
                     <div style="text-align: center; margin-bottom: 20px;">
                         <h2 style="color: #2c3e50; margin-bottom: 5px;">DDG Logistics</h2>
-                        <h3 style="color: #34495e; margin-bottom: 5px;">Complaint Receipt</h3>
-                        <p style="color: #7f8c8d; margin-bottom: 15px;">Reference: ${refNumber}</p>
-                        <p style="color: #7f8c8d;">Date: ${formData.timestamp}</p>
+                        <h3 style="color: #34495e; margin-bottom: 5px;">${t.receipt}</h3>
+                        <p style="color: #7f8c8d; margin-bottom: 15px;">${t.reference} ${refNumber}</p>
+                        <p style="color: #7f8c8d;">${t.date} ${formData.timestamp}</p>
                     </div>
                     
                     <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-                        <h4 style="margin-bottom: 10px; color: #2c3e50;">Complaint Details</h4>
-                        <p><strong>Name:</strong> ${formData.name}</p>
-                        <p><strong>Branch:</strong> ${formData.branch}</p>
-                        <p><strong>Location:</strong> ${formData.location}</p>
-                        <p><strong>Contact:</strong> ${formData.contact}</p>
+                        <h4 style="margin-bottom: 10px; color: #2c3e50;">${t.complaintDetails}</h4>
+                        <p><strong>${t.name.replace(" *", "")}</strong> ${formData.name}</p>
+                        <p><strong>${t.branch.replace(" *", "")}</strong> ${formData.branch}</p>
+                        <p><strong>${t.location.replace(" *", "")}</strong> ${formData.location}</p>
+                        <p><strong>${t.contact.replace(" *", "")}</strong> ${formData.contact}</p>
                     </div>
                     
                     <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-                        <h4 style="margin-bottom: 10px; color: #2c3e50;">Issue Description</h4>
+                        <h4 style="margin-bottom: 10px; color: #2c3e50;">${t.issueDescription}</h4>
                         <p style="white-space: pre-wrap;">${formData.issue}</p>
                     </div>
                     
                     ${formData.image ? `
                     <div style="margin-bottom: 20px;">
-                        <h4 style="margin-bottom: 10px; color: #2c3e50;">Attached Photo</h4>
+                        <h4 style="margin-bottom: 10px; color: #2c3e50;">${t.attachedPhoto}</h4>
                         <img src="${formData.image}" style="max-width: 100%; max-height: 300px; border-radius: 8px;">
                     </div>` : ''}
                     
                     <div style="margin-top: 30px; font-size: 12px; color: #7f8c8d; text-align: center;">
-                        <p>This is an automated receipt. Thank you for your feedback.</p>
-                        <p>For any inquiries, please contact DDG Logistics Support.</p>
+                        <p>${t.autoReceipt}</p>
+                        <p>${t.contactSupport}</p>
                     </div>
                 </div>
             `;
             
-            // Generate PDF
+            // Generate PDF with proper character encoding
             const opt = {
                 margin: 10,
                 filename: `DDG_Complaint_${refNumber}.pdf`,
@@ -443,56 +540,6 @@
             
             html2pdf().set(opt).from(pdfContent).save();
         }
-
-        const translations = {
-            en: {
-                title: "DDG Logistics Complaint Form",
-                name: "Complainer Name *",
-                branch: "Branch Name *",
-                location: "Location *",
-                issue: "Issue Description *",
-                contact: "Contact Number (Mobile Number) *",
-                submit: "Submit Complaint",
-                takePhoto: "Take Photo (Optional)",
-                qrTitle: "Complaint Reference QR Code",
-                downloadQR: "Download QR Code",
-                downloadPDF: "Download Receipt as PDF",
-                successMsg: "Your complaint has been submitted successfully!"
-            },
-            si: {
-                title: "DDG ලොජිස්ටික්ස් පැමිණිලි පෝරමය",
-                name: "පැමිණිලිකරුගේ නම *",
-                branch: "ශාඛා නාමය *",
-                location: "ස්ථානය *",
-                issue: "ගැටළුව විස්තර කරන්න *",
-                contact: "දුරකථන අංකය (ජංගම) *",
-                submit: "පැමිණිලි යවන්න",
-                takePhoto: "ඡායාරූපය ගන්න (අනිවාර්යය නොවේ)",
-                qrTitle: "පැමිණිලි යොමු QR කේතය",
-                downloadQR: "QR කේතය බාගත කරන්න",
-                downloadPDF: "රිසිට්පත PDF ලෙස බාගත කරන්න",
-                successMsg: "ඔබගේ පැමිණිල්ල සාර්ථකව යවා ඇත!"
-            }
-        };
-
-        let currentLang = "en"; // Default Language
-
-        document.getElementById("language-btn").addEventListener("click", () => {
-            currentLang = currentLang === "en" ? "si" : "en";
-
-            document.getElementById("form-title").textContent = translations[currentLang].title;
-            document.getElementById("label-name").textContent = translations[currentLang].name;
-            document.getElementById("label-branch").textContent = translations[currentLang].branch;
-            document.getElementById("label-location").textContent = translations[currentLang].location;
-            document.getElementById("label-issue").textContent = translations[currentLang].issue;
-            document.getElementById("label-contact").textContent = translations[currentLang].contact;
-            document.getElementById("submit-btn").textContent = translations[currentLang].submit;
-            document.getElementById("camera-btn").textContent = translations[currentLang].takePhoto;
-            document.getElementById("qr-title").textContent = translations[currentLang].qrTitle;
-            document.getElementById("download-qr-btn").textContent = translations[currentLang].downloadQR;
-            document.getElementById("download-pdf-btn").textContent = translations[currentLang].downloadPDF;
-            document.getElementById("success-message").textContent = translations[currentLang].successMsg;
-        });
     </script>
 </body>
 </html>
